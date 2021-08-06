@@ -27,8 +27,4 @@ public class FirstProjectApplication {
 	public SpringApplicationContext springApplicationContext() {
 		return new SpringApplicationContext();
 	}
-
-	public AppProperties appProperties() {
-		return new AppProperties();
-	}
 }
