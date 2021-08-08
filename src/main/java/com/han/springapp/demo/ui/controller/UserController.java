@@ -6,6 +6,7 @@ import com.han.springapp.demo.ui.model.request.UserSignupRequest;
 import com.han.springapp.demo.ui.model.response.UserResponse;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -21,7 +22,8 @@ public class UserController {
     @Autowired
     UserService userService;
 
-    @GetMapping(path="/{id}")
+    // Default response type is XML
+    @GetMapping(path="/{id}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public UserResponse getUser(@PathVariable String id) {
         UserResponse retVal = new UserResponse();
         UserDto userDto = userService.getUserByUserId(id);
@@ -30,7 +32,9 @@ public class UserController {
         return retVal;
     }
 
-    @PostMapping
+    @PostMapping(
+            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
     public UserResponse createUser(@RequestBody UserSignupRequest userDetails) {
         UserResponse retVal = new UserResponse();
 
