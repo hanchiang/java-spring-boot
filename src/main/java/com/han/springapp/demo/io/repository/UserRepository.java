@@ -9,10 +9,7 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface UserRepository extends CrudRepository<UserEntity, Long> {
-    /**
-     * Need to follow the format: findBy<somefield>
-     * @param email
-     * @return
-     */
+    // Methods need to be named according to the format: findBy<field>
     UserEntity findByEmail(String email);
+    UserEntity findByUserId(String userId);
 }
