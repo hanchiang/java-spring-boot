@@ -1,8 +1,10 @@
 package com.han.springapp.demo.ui.controller;
 
+import com.han.springapp.demo.exception.UserServiceException;
 import com.han.springapp.demo.service.UserService;
 import com.han.springapp.demo.shared.dto.UserDto;
 import com.han.springapp.demo.ui.model.request.UserSignupRequest;
+import com.han.springapp.demo.ui.model.response.ErrorMessages;
 import com.han.springapp.demo.ui.model.response.UserResponse;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,8 +37,12 @@ public class UserController {
     @PostMapping(
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public UserResponse createUser(@RequestBody UserSignupRequest userDetails) {
+    public UserResponse createUser(@RequestBody UserSignupRequest userDetails) throws Exception {
         UserResponse retVal = new UserResponse();
+
+        if (userDetails.getFirstName() == null || userDetails.getFirstName().isEmpty()) {
+            throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
+        }
 
         UserDto userDto = new UserDto();
         BeanUtils.copyProperties(userDetails, userDto);
