@@ -1,10 +1,12 @@
 package com.han.springapp.demo.service.impl;
 
+import com.han.springapp.demo.exception.UserServiceException;
 import com.han.springapp.demo.io.entity.UserEntity;
 import com.han.springapp.demo.io.repository.UserRepository;
 import com.han.springapp.demo.service.UserService;
 import com.han.springapp.demo.shared.Utils;
 import com.han.springapp.demo.shared.dto.UserDto;
+import com.han.springapp.demo.ui.model.response.ErrorMessages;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.User;
@@ -57,12 +59,7 @@ public class UserServiceImpl implements UserService {
         return retVal;
     }
 
-    /**
-     * Spring security framework will call this method, after attemptAuthentication()
-     * @param email
-     * @return
-     * @throws UsernameNotFoundException
-     */
+    // Spring security framework will call this method, after attemptAuthentication()
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         UserEntity userEntity = userRepository.findByEmail(email);
@@ -76,9 +73,24 @@ public class UserServiceImpl implements UserService {
         UserDto retVal = new UserDto();
         UserEntity userEntity = userRepository.findByUserId(userId);
         if (userEntity == null) {
-            throw new UsernameNotFoundException(userId);
+            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
         BeanUtils.copyProperties(userEntity, retVal);
+        return retVal;
+    }
+
+    public UserDto updateUser(String userId, UserDto user) {
+        UserDto retVal = new UserDto();
+        UserEntity userEntity = userRepository.findByUserId(userId);
+        if (userEntity == null) {
+            throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
+        }
+
+        userEntity.setFirstName(user.getFirstName());
+        userEntity.setLastName(user.getLastName());
+        UserEntity updatedUser = userRepository.save(userEntity);
+
+        BeanUtils.copyProperties(updatedUser, retVal);
         return retVal;
     }
 }

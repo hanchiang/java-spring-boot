@@ -4,6 +4,7 @@ import com.han.springapp.demo.exception.UserServiceException;
 import com.han.springapp.demo.service.UserService;
 import com.han.springapp.demo.shared.dto.UserDto;
 import com.han.springapp.demo.ui.model.request.UserSignupRequest;
+import com.han.springapp.demo.ui.model.request.UserUpdateRequest;
 import com.han.springapp.demo.ui.model.response.ErrorMessages;
 import com.han.springapp.demo.ui.model.response.UserResponse;
 import org.springframework.beans.BeanUtils;
@@ -37,7 +38,7 @@ public class UserController {
     @PostMapping(
             consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
             produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
-    public UserResponse createUser(@RequestBody UserSignupRequest userDetails) throws Exception {
+    public UserResponse createUser(@RequestBody UserSignupRequest userDetails) throws UserServiceException {
         UserResponse retVal = new UserResponse();
 
         if (userDetails.getFirstName() == null || userDetails.getFirstName().isEmpty()) {
@@ -53,9 +54,25 @@ public class UserController {
         return retVal;
     }
 
-    @PutMapping
-    public String updateUser() {
-        return "update user was called";
+    @PutMapping(
+            path="/{id}",
+            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
+            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+    )
+    public UserResponse updateUser(@PathVariable String id, @RequestBody UserUpdateRequest userDetails) {
+        UserResponse retVal = new UserResponse();
+
+        if (userDetails.getFirstName() == null || userDetails.getFirstName().isEmpty()) {
+            throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
+        }
+
+        UserDto userDto = new UserDto();
+        BeanUtils.copyProperties(userDetails, userDto);
+
+        UserDto updatedUser = userService.updateUser(id, userDto);
+        BeanUtils.copyProperties(updatedUser, retVal);
+
+        return retVal;
     }
 
     @DeleteMapping
