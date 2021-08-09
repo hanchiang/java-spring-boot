@@ -29,9 +29,9 @@ public class UserServiceImpl implements UserService {
     @Autowired
     BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    public UserDto createUser(UserDto user) {
+    public UserDto createUser(UserDto user) throws UserServiceException {
         if (userRepository.findByEmail(user.getEmail()) != null) {
-            throw new RuntimeException("Record already exists");
+            throw new UserServiceException("Record already exists");
         }
 
         UserEntity userEntity = new UserEntity();

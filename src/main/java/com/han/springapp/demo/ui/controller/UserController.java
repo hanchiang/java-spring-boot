@@ -26,7 +26,7 @@ public class UserController {
     UserService userService;
 
     // Default response type is XML
-    @GetMapping(path="/{id}", produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+    @GetMapping(path="/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public UserResponse getUser(@PathVariable String id) {
         UserResponse retVal = new UserResponse();
         UserDto userDto = userService.getUserByUserId(id);
@@ -36,12 +36,18 @@ public class UserController {
     }
 
     @PostMapping(
-            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE})
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
+            )
     public UserResponse createUser(@RequestBody UserSignupRequest userDetails) throws UserServiceException {
         UserResponse retVal = new UserResponse();
 
-        if (userDetails.getFirstName() == null || userDetails.getFirstName().isEmpty()) {
+        if (
+                userDetails.getFirstName() == null || userDetails.getFirstName().isEmpty() ||
+                        userDetails.getLastName() == null || userDetails.getLastName().isEmpty() ||
+                        userDetails.getEmail() == null || userDetails.getEmail().isEmpty() ||
+                        userDetails.getPassword() == null || userDetails.getPassword().isEmpty()
+        ) {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
 
@@ -56,13 +62,16 @@ public class UserController {
 
     @PutMapping(
             path="/{id}",
-            consumes = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE},
-            produces = {MediaType.APPLICATION_XML_VALUE, MediaType.APPLICATION_JSON_VALUE}
+            consumes = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE},
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     public UserResponse updateUser(@PathVariable String id, @RequestBody UserUpdateRequest userDetails) {
         UserResponse retVal = new UserResponse();
 
-        if (userDetails.getFirstName() == null || userDetails.getFirstName().isEmpty()) {
+        if (
+                (userDetails.getFirstName() == null || userDetails.getFirstName().isEmpty()) &&
+                        (userDetails.getLastName() == null || userDetails.getLastName().isEmpty())
+        ) {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
 
