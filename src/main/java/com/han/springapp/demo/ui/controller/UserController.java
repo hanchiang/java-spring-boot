@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * https://spring.io/guides/tutorials/rest/
  * https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/web/bind/annotation/RestController.html
@@ -91,6 +94,24 @@ public class UserController {
         userService.deleteUser(id);
 
         retVal.setOperationResult(OperationStatus.SUCCESS.name());
+        return retVal;
+    }
+
+    @GetMapping(produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public List<UserResponse> getUsers(
+            @RequestParam(value="page", defaultValue="0") int page,
+            @RequestParam(value="limit", defaultValue="10") int limit
+    ) {
+        List<UserResponse> retVal = new ArrayList<>();
+
+        if (page > 0) page--;
+
+        List<UserDto> userDtos = userService.getUsers(page, limit);
+        for (UserDto userDto: userDtos) {
+            UserResponse userResponse = new UserResponse();
+            BeanUtils.copyProperties(userDto, userResponse);
+            retVal.add(userResponse);
+        }
         return retVal;
     }
 }
