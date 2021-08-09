@@ -5,8 +5,7 @@ import com.han.springapp.demo.service.UserService;
 import com.han.springapp.demo.shared.dto.UserDto;
 import com.han.springapp.demo.ui.model.request.UserSignupRequest;
 import com.han.springapp.demo.ui.model.request.UserUpdateRequest;
-import com.han.springapp.demo.ui.model.response.ErrorMessages;
-import com.han.springapp.demo.ui.model.response.UserResponse;
+import com.han.springapp.demo.ui.model.response.*;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -84,8 +83,14 @@ public class UserController {
         return retVal;
     }
 
-    @DeleteMapping
-    public String deleteUser() {
-        return "delete user was called";
+    @DeleteMapping(path = "/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public OperationStatusResponse deleteUser(@PathVariable String id) {
+        OperationStatusResponse retVal = new OperationStatusResponse();
+
+        retVal.setOperationName(OperationNames.DELETE.name());
+        userService.deleteUser(id);
+
+        retVal.setOperationResult(OperationStatus.SUCCESS.name());
+        return retVal;
     }
 }
