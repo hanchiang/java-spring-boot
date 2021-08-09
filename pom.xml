@@ -10,7 +10,7 @@
 		<version>2.5.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.han.springapp</groupId>
+	<groupId>com.han.springapp.firstjavaproject</groupId>
 	<artifactId>first-java-project</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>first project</name>
