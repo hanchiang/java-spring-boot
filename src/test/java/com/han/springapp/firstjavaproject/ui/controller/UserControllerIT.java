@@ -12,8 +12,8 @@ import java.util.Map;
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.*;
 
+// TODO: Find a way to inject UserRepository to delete data after each test
 class UserControllerIT {
-
     private final String CONTEXT_PATH = "/first-java-project";
 
     @BeforeEach
@@ -39,7 +39,7 @@ class UserControllerIT {
         userDetails.put("email", "email");
         userDetails.put("password", "password");
 
-        Response response = given().contentType("application/json")
+        Response response =  given().contentType("application/json")
                 .accept("application/json")
                 .body(userDetails)
                 .when()
@@ -52,10 +52,6 @@ class UserControllerIT {
 
         String userId = response.jsonPath().getString("userId");
         assertNotNull(userId);
-    }
-
-    @Test
-    void updateUser() {
     }
 
     @Test
