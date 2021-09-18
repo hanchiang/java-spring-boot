@@ -25,20 +25,21 @@ class UserControllerIT {
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = 8080;
     }
-
-    @AfterEach
-    void tearDown() {
-    }
-
-
-    @Test
-    @Order(1)
-    void createUser() {
-        Map<String, Object> userDetails = new HashMap<>();
+    
+    Map<String, String> getUserDetails() {
+        Map<String, String> userDetails = new HashMap<>();
         userDetails.put("firstName", "first name");
         userDetails.put("lastName", "last name");
         userDetails.put("email", "email");
         userDetails.put("password", "password");
+
+        return userDetails;
+    }
+
+    @Test
+    @Order(1)
+    void createUser() {
+        Map<String, String> userDetails = getUserDetails();
 
         Response response =  given().contentType("application/json")
                 .accept("application/json")
@@ -90,11 +91,13 @@ class UserControllerIT {
                 .response();
 
         List<UserDto> users = response.jsonPath().getList("", UserDto.class);
+        Map<String, String> userDetails = getUserDetails();
+
         assertEquals(1, users.size());
         assertEquals(userId, users.get(0).getUserId());
-        assertEquals("first name", users.get(0).getFirstName());
-        assertEquals("last name", users.get(0).getLastName());
-        assertEquals("email", users.get(0).getEmail());
+        assertEquals(userDetails.get("firstName"), users.get(0).getFirstName());
+        assertEquals(userDetails.get("lastName"), users.get(0).getLastName());
+        assertEquals(userDetails.get("email"), users.get(0).getEmail());
     }
 
     @Test
@@ -112,14 +115,17 @@ class UserControllerIT {
                 .extract()
                 .response();
 
-        String userId = response.jsonPath().getString("userId");
+        String localUserId = response.jsonPath().getString("userId");
         String email = response.jsonPath().getString("email");
         String firstName = response.jsonPath().getString("firstName");
         String lastName = response.jsonPath().getString("lastName");
-        assertNotNull(userId);
-        assertNotNull(email);
-        assertNotNull(firstName);
-        assertNotNull(lastName);
+
+        Map<String, String> userDetails = getUserDetails();
+
+        assertEquals(userId, localUserId);
+        assertEquals(userDetails.get("firstName"), firstName);
+        assertEquals(userDetails.get("lastName"), lastName);
+        assertEquals(userDetails.get("email"), email);
     }
 
     @Test
@@ -141,19 +147,19 @@ class UserControllerIT {
                 .extract()
                 .response();
 
-        String userId = response.jsonPath().getString("userId");
+        String localUserId = response.jsonPath().getString("userId");
         String email = response.jsonPath().getString("email");
         String firstName = response.jsonPath().getString("firstName");
         String lastName = response.jsonPath().getString("lastName");
 
-        assertEquals(200, response.getStatusCode());
-        assertNotNull(userId);
-        assertNotNull(email);
-        assertNotNull(firstName);
-        assertNotNull(lastName);
+        Map<String, String> userDetails = getUserDetails();
 
-        assertEquals("new first name", firstName);
-        assertEquals("new last name", lastName);
+        assertEquals(200, response.getStatusCode());
+
+        assertEquals(userId, localUserId);
+        assertEquals(updateUserDetails.get("firstName"), firstName);
+        assertEquals(updateUserDetails.get("lastName"), lastName);
+        assertEquals(userDetails.get("email"), email);
     }
 
     @Test
