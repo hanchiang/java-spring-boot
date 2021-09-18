@@ -25,7 +25,7 @@ class UserControllerIT {
         RestAssured.baseURI = "http://localhost";
         RestAssured.port = 8080;
     }
-    
+
     Map<String, String> getUserDetails() {
         Map<String, String> userDetails = new HashMap<>();
         userDetails.put("firstName", "first name");
