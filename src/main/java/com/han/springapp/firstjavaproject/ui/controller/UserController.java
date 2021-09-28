@@ -6,7 +6,7 @@ import com.han.springapp.firstjavaproject.shared.dto.UserDto;
 import com.han.springapp.firstjavaproject.ui.model.request.UserSignupRequest;
 import com.han.springapp.firstjavaproject.ui.model.request.UserUpdateRequest;
 import com.han.springapp.firstjavaproject.ui.model.response.*;
-import org.springframework.beans.BeanUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -30,9 +30,9 @@ public class UserController {
     // Default response type is XML
     @GetMapping(path="/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
     public UserResponse getUser(@PathVariable String id) {
-        UserResponse retVal = new UserResponse();
         UserDto userDto = userService.getUserByUserId(id);
-        BeanUtils.copyProperties(userDto, retVal);
+        ModelMapper modelMapper = new ModelMapper();
+        UserResponse retVal = modelMapper.map(userDto, UserResponse.class);
 
         return retVal;
     }
@@ -42,8 +42,6 @@ public class UserController {
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
             )
     public UserResponse createUser(@RequestBody UserSignupRequest userDetails) throws UserServiceException {
-        UserResponse retVal = new UserResponse();
-
         if (
                 userDetails.getFirstName() == null || userDetails.getFirstName().isEmpty() ||
                         userDetails.getLastName() == null || userDetails.getLastName().isEmpty() ||
@@ -53,11 +51,11 @@ public class UserController {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
 
-        UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(userDetails, userDto);
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto userDto = modelMapper.map(userDetails, UserDto.class);
 
         UserDto createdUser = userService.createUser(userDto);
-        BeanUtils.copyProperties(createdUser, retVal);
+        UserResponse retVal = modelMapper.map(createdUser, UserResponse.class);
 
         return retVal;
     }
@@ -68,8 +66,6 @@ public class UserController {
             produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE}
     )
     public UserResponse updateUser(@PathVariable String id, @RequestBody UserUpdateRequest userDetails) {
-        UserResponse retVal = new UserResponse();
-
         if (
                 (userDetails.getFirstName() == null || userDetails.getFirstName().isEmpty()) &&
                         (userDetails.getLastName() == null || userDetails.getLastName().isEmpty())
@@ -77,11 +73,11 @@ public class UserController {
             throw new UserServiceException(ErrorMessages.MISSING_REQUIRED_FIELD.getErrorMessage());
         }
 
-        UserDto userDto = new UserDto();
-        BeanUtils.copyProperties(userDetails, userDto);
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto userDto = modelMapper.map(userDetails, UserDto.class);
 
         UserDto updatedUser = userService.updateUser(id, userDto);
-        BeanUtils.copyProperties(updatedUser, retVal);
+        UserResponse retVal = modelMapper.map(updatedUser, UserResponse.class);
 
         return retVal;
     }
@@ -108,8 +104,8 @@ public class UserController {
 
         List<UserDto> userDtos = userService.getUsers(page, limit);
         for (UserDto userDto: userDtos) {
-            UserResponse userResponse = new UserResponse();
-            BeanUtils.copyProperties(userDto, userResponse);
+            ModelMapper modelMapper = new ModelMapper();
+            UserResponse userResponse = modelMapper.map(userDto, UserResponse.class);
             retVal.add(userResponse);
         }
         return retVal;

@@ -83,6 +83,12 @@
 			<scope>test</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>org.modelmapper</groupId>
+			<artifactId>modelmapper</artifactId>
+			<version>2.4.2</version>
+		</dependency>
+
 <!--		Uncomment to build project as war  -->
 <!--		<dependency>-->
 <!--			<groupId>org.springframework.boot</groupId>-->

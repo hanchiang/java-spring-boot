@@ -1,10 +1,13 @@
 package com.han.springapp.firstjavaproject.ui.model.request;
 
+import java.util.List;
+
 public class UserSignupRequest {
     private String firstName;
     private String lastName;
     private String email;
     private String password;
+    private List<AddressSignupRequest> addresses;
 
     public String getFirstName() {
         return firstName;
@@ -36,5 +39,13 @@ public class UserSignupRequest {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public List<AddressSignupRequest> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressSignupRequest> addresses) {
+        this.addresses = addresses;
     }
 }

@@ -17,7 +17,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.BeanUtils;
+import org.modelmapper.ModelMapper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -137,8 +137,8 @@ class UserControllerTest {
         userUpdateRequest.setFirstName("new first name");
         userUpdateRequest.setLastName("new last name");
 
-        UserDto updatedUserDto = new UserDto();
-        BeanUtils.copyProperties(userDto, updatedUserDto);
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto updatedUserDto = modelMapper.map(userDto, UserDto.class);
         updatedUserDto.setFirstName(userUpdateRequest.getFirstName());
         updatedUserDto.setLastName(userUpdateRequest.getLastName());
 
@@ -195,8 +195,8 @@ class UserControllerTest {
         List<UserDto> userDtos = new ArrayList<>();
         userDtos.add(userDto);
 
-        UserDto userDto2 = new UserDto();
-        BeanUtils.copyProperties(userDto, userDto2);
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto userDto2 = modelMapper.map(userDto, UserDto.class);
         userDto2.setUserId("user id 2");
         userDto2.setFirstName("first naem 2");
         userDto2.setLastName("last name 2");

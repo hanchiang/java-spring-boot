@@ -7,7 +7,7 @@ import com.han.springapp.firstjavaproject.service.UserService;
 import com.han.springapp.firstjavaproject.shared.Utils;
 import com.han.springapp.firstjavaproject.shared.dto.UserDto;
 import com.han.springapp.firstjavaproject.ui.model.response.ErrorMessages;
-import org.springframework.beans.BeanUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -38,16 +38,16 @@ public class UserServiceImpl implements UserService {
             throw new UserServiceException("Record already exists");
         }
 
-        UserEntity userEntity = new UserEntity();
-        BeanUtils.copyProperties(user, userEntity);
+        ModelMapper modelMapper = new ModelMapper();
+        UserEntity userEntity = modelMapper.map(user, UserEntity.class);
 
         String publicUserId = utils.generateUserId(30);
         userEntity.setUserId(publicUserId);
         userEntity.setEncryptedPassword(bCryptPasswordEncoder.encode(user.getPassword()));
 
         UserEntity storedUser = userRepository.save(userEntity);
-        UserDto retVal = new UserDto();
-        BeanUtils.copyProperties(storedUser, retVal);
+
+        UserDto retVal = modelMapper.map(storedUser, UserDto.class);
 
         return retVal;
     }
@@ -57,8 +57,9 @@ public class UserServiceImpl implements UserService {
         if (userEntity == null) {
             throw new UsernameNotFoundException(email);
         }
-        UserDto retVal = new UserDto();
-        BeanUtils.copyProperties(userEntity, retVal);
+
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto retVal = modelMapper.map(userEntity, UserDto.class);
 
         return retVal;
     }
@@ -74,17 +75,18 @@ public class UserServiceImpl implements UserService {
     }
 
     public UserDto getUserByUserId(String userId) {
-        UserDto retVal = new UserDto();
+
         UserEntity userEntity = userRepository.findByUserId(userId);
         if (userEntity == null) {
             throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
         }
-        BeanUtils.copyProperties(userEntity, retVal);
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto retVal = modelMapper.map(userEntity, UserDto.class);
         return retVal;
     }
 
     public UserDto updateUser(String userId, UserDto user) {
-        UserDto retVal = new UserDto();
+
         UserEntity userEntity = userRepository.findByUserId(userId);
         if (userEntity == null) {
             throw new UserServiceException(ErrorMessages.NO_RECORD_FOUND.getErrorMessage());
@@ -94,7 +96,8 @@ public class UserServiceImpl implements UserService {
         userEntity.setLastName(user.getLastName());
         UserEntity updatedUser = userRepository.save(userEntity);
 
-        BeanUtils.copyProperties(updatedUser, retVal);
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto retVal = modelMapper.map(updatedUser, UserDto.class);
         return retVal;
     }
 
@@ -114,8 +117,8 @@ public class UserServiceImpl implements UserService {
         List<UserEntity> users = usersPage.getContent();
 
         for (UserEntity userEntity: users) {
-            UserDto userDto = new UserDto();
-            BeanUtils.copyProperties(userEntity, userDto);
+            ModelMapper modelMapper = new ModelMapper();
+            UserDto userDto = modelMapper.map(userEntity, UserDto.class);
             retVal.add(userDto);
         }
 

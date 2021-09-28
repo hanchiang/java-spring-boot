@@ -9,8 +9,7 @@ import java.io.Serializable;
 /**
  * This class will be persisted to the database
  */
-// persist to "users" table
-@Entity(name="users")
+@Entity(name="user")
 public class UserEntity implements Serializable {
     private static final long serialVersionUID = 2L;
 

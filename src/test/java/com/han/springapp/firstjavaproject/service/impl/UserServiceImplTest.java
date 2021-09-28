@@ -12,7 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.springframework.beans.BeanUtils;
+import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -84,9 +84,7 @@ class UserServiceImplTest {
     @Test
     void createUserAlreadyExist() {
         when(userRepository.findByEmail(anyString())).thenReturn(userEntity);
-        assertThrows(UserServiceException.class, () -> {
-            userService.createUser(userDto);
-        });
+        assertThrows(UserServiceException.class, () -> userService.createUser(userDto));
     }
 
     @Test
@@ -107,9 +105,7 @@ class UserServiceImplTest {
     void getUserNotFound() {
         when(userRepository.findByEmail(anyString())).thenReturn(null);
 
-        assertThrows(UsernameNotFoundException.class, () -> {
-            userService.getUser("test@test.com");
-        });
+        assertThrows(UsernameNotFoundException.class, () -> userService.getUser("test@test.com"));
     }
 
     @Test
@@ -160,8 +156,8 @@ class UserServiceImplTest {
         newUserDto.setFirstName("new first name");
         newUserDto.setLastName("new last name");
 
-        UserEntity newUserEntity = new UserEntity();
-        BeanUtils.copyProperties(userEntity, newUserEntity);
+        ModelMapper modelMapper = new ModelMapper();
+        UserEntity newUserEntity = modelMapper.map(userEntity, UserEntity.class);
         newUserEntity.setFirstName("new first name");
         newUserEntity.setLastName("new last name");
         when(userRepository.save(any())).thenReturn(newUserEntity);
@@ -221,8 +217,8 @@ class UserServiceImplTest {
 
 
     private List<UserEntity> getUserEntities() {
-        UserEntity userEntity2 = new UserEntity();
-        BeanUtils.copyProperties(userEntity, userEntity2);
+        ModelMapper modelMapper = new ModelMapper();
+        UserEntity userEntity2 = modelMapper.map(userEntity, UserEntity.class);
         return Arrays.asList(userEntity, userEntity2);
     }
 
@@ -230,12 +226,11 @@ class UserServiceImplTest {
         List<UserEntity> userEntities = getUserEntities();
         List<UserDto> expectedUserDtos = new ArrayList<>();
 
-        UserDto expectedUserDto = new UserDto();
-        BeanUtils.copyProperties(userEntities.get(0), expectedUserDto);
+        ModelMapper modelMapper = new ModelMapper();
+        UserDto expectedUserDto = modelMapper.map(userEntities.get(0), UserDto.class);
         expectedUserDtos.add(expectedUserDto);
 
-        expectedUserDto = new UserDto();
-        BeanUtils.copyProperties(userEntities.get(1), expectedUserDto);
+        expectedUserDto = modelMapper.map(userEntities.get(1), UserDto.class);
         expectedUserDtos.add(expectedUserDto);
 
         return expectedUserDtos;
