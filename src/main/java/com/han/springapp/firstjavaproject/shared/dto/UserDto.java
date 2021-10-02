@@ -1,6 +1,7 @@
 package com.han.springapp.firstjavaproject.shared.dto;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * This class will contain data that will be passed between different layers(ui, service, etc)
@@ -16,6 +17,7 @@ public class UserDto implements Serializable {
     private String encryptedPassword;
     private String emailVerificationToken;
     private Boolean emailVerificationStatus = false;
+    private List<AddressDto> addresses;
 
     public long getId() {
         return id;
@@ -87,5 +89,13 @@ public class UserDto implements Serializable {
 
     public void setEmailVerificationStatus(Boolean emailVerificationStatus) {
         this.emailVerificationStatus = emailVerificationStatus;
+    }
+
+    public List<AddressDto> getAddresses() {
+        return addresses;
+    }
+
+    public void setAddresses(List<AddressDto> addresses) {
+        this.addresses = addresses;
     }
 }

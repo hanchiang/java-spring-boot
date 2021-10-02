@@ -5,6 +5,7 @@ import com.han.springapp.firstjavaproject.io.entity.UserEntity;
 import com.han.springapp.firstjavaproject.io.repository.UserRepository;
 import com.han.springapp.firstjavaproject.service.UserService;
 import com.han.springapp.firstjavaproject.shared.Utils;
+import com.han.springapp.firstjavaproject.shared.dto.AddressDto;
 import com.han.springapp.firstjavaproject.shared.dto.UserDto;
 import com.han.springapp.firstjavaproject.ui.model.response.ErrorMessages;
 import org.modelmapper.ModelMapper;
@@ -36,6 +37,12 @@ public class UserServiceImpl implements UserService {
     public UserDto createUser(UserDto user) throws UserServiceException {
         if (userRepository.findByEmail(user.getEmail()) != null) {
             throw new UserServiceException("Record already exists");
+        }
+
+        for (int i = 0; i < user.getAddresses().size(); i++) {
+            AddressDto address = user.getAddresses().get(i);
+            address.setAddressId(utils.generateAddressId(30));
+            user.getAddresses().set(i, address);
         }
 
         ModelMapper modelMapper = new ModelMapper();
