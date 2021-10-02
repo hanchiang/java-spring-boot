@@ -1,16 +1,21 @@
 package com.han.springapp.firstjavaproject.ui.controller;
 
 import com.han.springapp.firstjavaproject.exception.UserServiceException;
+import com.han.springapp.firstjavaproject.service.AddressService;
 import com.han.springapp.firstjavaproject.service.UserService;
+import com.han.springapp.firstjavaproject.shared.dto.AddressDto;
 import com.han.springapp.firstjavaproject.shared.dto.UserDto;
 import com.han.springapp.firstjavaproject.ui.model.request.UserSignupRequest;
 import com.han.springapp.firstjavaproject.ui.model.request.UserUpdateRequest;
 import com.han.springapp.firstjavaproject.ui.model.response.*;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import javax.transaction.Transactional;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,6 +31,9 @@ public class UserController {
     // https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/beans/factory/annotation/Autowired.html
     @Autowired
     UserService userService;
+
+    @Autowired
+    AddressService addressService;
 
     // Default response type is XML
     @GetMapping(path="/{id}", produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
@@ -108,6 +116,21 @@ public class UserController {
             UserResponse userResponse = modelMapper.map(userDto, UserResponse.class);
             retVal.add(userResponse);
         }
+        return retVal;
+    }
+
+    @GetMapping(path="/{id}/addresses",
+            produces = {MediaType.APPLICATION_JSON_VALUE, MediaType.APPLICATION_XML_VALUE})
+    public List<AddressResponse> getUserAddresses(@PathVariable String id) {
+        List <AddressResponse> retVal = new ArrayList<>();
+        List<AddressDto> addressesDto = addressService.getAddresses(id);
+
+        if (addressesDto != null) {
+            ModelMapper modelMapper = new ModelMapper();
+            Type listType = new TypeToken<List<AddressResponse>>() {}.getType();
+            retVal = modelMapper.map(addressesDto, listType);
+        }
+
         return retVal;
     }
 }

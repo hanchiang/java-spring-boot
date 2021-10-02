@@ -19,11 +19,13 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
 // https://docs.spring.io/spring-framework/docs/current/javadoc-api/org/springframework/stereotype/Service.html
 @Service
+@Transactional
 public class UserServiceImpl implements UserService {
     @Autowired
     UserRepository userRepository;
@@ -41,6 +43,7 @@ public class UserServiceImpl implements UserService {
 
         for (int i = 0; i < user.getAddresses().size(); i++) {
             AddressDto address = user.getAddresses().get(i);
+            address.setUserDetails(user);
             address.setAddressId(utils.generateAddressId(30));
             user.getAddresses().set(i, address);
         }
