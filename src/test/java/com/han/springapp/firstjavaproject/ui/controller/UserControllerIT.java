@@ -1,12 +1,14 @@
 package com.han.springapp.firstjavaproject.ui.controller;
 
 import com.han.springapp.firstjavaproject.shared.dto.UserDto;
+import com.han.springapp.firstjavaproject.ui.model.request.AddressSignupRequest;
 import com.han.springapp.firstjavaproject.ui.model.response.OperationNames;
 import com.han.springapp.firstjavaproject.ui.model.response.OperationStatus;
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 import org.junit.jupiter.api.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,20 +28,42 @@ class UserControllerIT {
         RestAssured.port = 8080;
     }
 
-    Map<String, String> getUserDetails() {
-        Map<String, String> userDetails = new HashMap<>();
+    Map<String, Object> getUserDetails() {
+        Map<String, Object> userDetails = new HashMap<>();
         userDetails.put("firstName", "first name");
         userDetails.put("lastName", "last name");
         userDetails.put("email", "email");
         userDetails.put("password", "password");
 
+        List<AddressSignupRequest> addresses = getSignUpAddresses();
+        userDetails.put("addresses", addresses);
+
         return userDetails;
+    }
+
+    List<AddressSignupRequest> getSignUpAddresses() {
+        List<AddressSignupRequest> addresses = new ArrayList<>();
+        AddressSignupRequest address1 = new AddressSignupRequest();
+        address1.setCity("Vancouver");
+        address1.setCountry("Canada");
+        address1.setStreetName("Street name");
+        address1.setPostalCode("123456");
+        address1.setType("billing");
+
+        AddressSignupRequest address2 = new AddressSignupRequest();
+        address2.setCity("Vancouver");
+        address2.setCountry("Canada");
+        address2.setStreetName("Street name");
+        address2.setPostalCode("123456");
+        address2.setType("shipping");
+
+        return addresses;
     }
 
     @Test
     @Order(1)
     void createUser() {
-        Map<String, String> userDetails = getUserDetails();
+        Map<String, Object> userDetails = getUserDetails();
 
         Response response =  given().contentType("application/json")
                 .accept("application/json")
@@ -89,10 +113,10 @@ class UserControllerIT {
                 .then()
                 .extract()
                 .response();
-
         List<UserDto> users = response.jsonPath().getList("", UserDto.class);
-        Map<String, String> userDetails = getUserDetails();
+        Map<String, Object> userDetails = getUserDetails();
 
+        System.out.println(users);
         assertEquals(1, users.size());
         assertEquals(userId, users.get(0).getUserId());
         assertEquals(userDetails.get("firstName"), users.get(0).getFirstName());
@@ -120,7 +144,7 @@ class UserControllerIT {
         String firstName = response.jsonPath().getString("firstName");
         String lastName = response.jsonPath().getString("lastName");
 
-        Map<String, String> userDetails = getUserDetails();
+        Map<String, Object> userDetails = getUserDetails();
 
         assertEquals(userId, localUserId);
         assertEquals(userDetails.get("firstName"), firstName);
@@ -152,7 +176,7 @@ class UserControllerIT {
         String firstName = response.jsonPath().getString("firstName");
         String lastName = response.jsonPath().getString("lastName");
 
-        Map<String, String> userDetails = getUserDetails();
+        Map<String, Object> userDetails = getUserDetails();
 
         assertEquals(200, response.getStatusCode());
 
@@ -180,4 +204,6 @@ class UserControllerIT {
         assertEquals(OperationNames.DELETE.name(), operationName);
         assertEquals(OperationStatus.SUCCESS.name(), operationResult);
     }
+
+    // TODO: getUserAddress, getUserAddresses
 }

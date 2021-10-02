@@ -4,7 +4,9 @@ import com.han.springapp.firstjavaproject.exception.UserServiceException;
 import com.han.springapp.firstjavaproject.io.entity.UserEntity;
 import com.han.springapp.firstjavaproject.io.repository.UserRepository;
 import com.han.springapp.firstjavaproject.shared.Utils;
+import com.han.springapp.firstjavaproject.shared.dto.AddressDto;
 import com.han.springapp.firstjavaproject.shared.dto.UserDto;
+import com.han.springapp.firstjavaproject.ui.model.request.AddressSignupRequest;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -59,10 +61,33 @@ class UserServiceImplTest {
         userEntity.setLastName("last name");
         userEntity.setEmail("email");
         userEntity.setEncryptedPassword("encrypted password");
+
+        userDto.setAddresses(getAddressesDto());
     }
 
     @AfterEach
     void tearDown() {
+    }
+
+    List<AddressDto> getAddressesDto() {
+        List<AddressDto> addresses = new ArrayList<>();
+        AddressDto address1 = new AddressDto();
+        address1.setAddressId("address 1 id");
+        address1.setCity("Vancouver");
+        address1.setCountry("Canada");
+        address1.setStreetName("Street name");
+        address1.setPostalCode("123456");
+        address1.setType("billing");
+
+        AddressDto address2 = new AddressDto();
+        address2.setAddressId("address 2 id");
+        address2.setCity("Vancouver");
+        address2.setCountry("Canada");
+        address2.setStreetName("Street name");
+        address2.setPostalCode("123456");
+        address2.setType("shipping");
+
+        return addresses;
     }
 
     @Test
